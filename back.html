@@ -1,0 +1,366 @@
+
+{
+    border-left-color: #e94a35;
+}
+      </style>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+  <img id="logo" src="health-samurai.png"></img>
+  <div id="dd" >
+    <img src="logo.svg"/>
+    <div id="conf">DevDays<br/>Amsterdam 2019
+    </div>
+  </div>
+
+		<div class="reveal">
+			<div class="slides">
+
+<section data-markdown><script type="text/template" >
+
+## Legacy 2 FHIR
+
+---
+
+Nikolai Ryzhikov @ Health Samurai
+
+@niquola (tw, gm, gh)
+
+</script></section>
+
+
+<section data-markdown><script type="text/template" >
+### Agenda
+---
+* What is FHIR-first?
+* Why transform to FHIR.f?
+* How transform to FHIR.f?
+</script></section>
+
+<section data-markdown><script type="text/template" >
+### Path
+---
+* FHIR facade
+* FHIR server
+* FHIR backend
+</script></section>
+
+
+<section data-markdown><script type="text/template" >
+
+### Translation / Mapping 
+---
+* Map your internal model to FHIR
+* 80/20
+* FHIR chat
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### Translation
+---
+* No place to put (extension)
+* Multiple ways
+* Custom Resources (non-interop)
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### Be interop!
+
+----
+
+Go to FHIR community
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### Align with FHIR
+---
+
+refactor to be more FHIR like
+
+safe steps
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### Transform DSL
+---
+
+* FHIR Mapping
+* JUTE
+* Isomorphic!
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### Transform DSL
+---
+
+
+```
+resourceType: Practitioner
+id: .npi
+gender:
+  $type: map
+  map: {F: female, M: male}
+  el: .provider_gender_code
+name:
+  - family: .provider_last_name_legal_name
+    use: official
+    given:
+      - .provider_first_name
+      - .provider_middle_name
+    suffix:
+      - .provider_name_suffix_text
+    prefix:
+      - .provider_name_prefix_text
+      - .provider_credential_text
+  - family: .provider_other_last_name
+    given:
+      - .provider_other_first_name
+      - .provider_other_middle_name
+    suffix:
+      - .provider_other_name_suffix_text
+    prefix:
+      - .provider_other_name_prefix_text
+      - .provider_other_credential_text
+address:
+  - use: "work"
+    city: .provider_business_practice_location_address_city_name
+    country: .provider_business_practice_location_address_country_code_if_out
+    line:
+      - .provider_first_line_business_practice_location_address
+      - .provider_second_line_business_practice_location_address
+    state: .provider_business_practice_location_address_state_name
+    postalCode: .provider_business_practice_location_address_postal_code
+```
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### Facade
+---
+
+* Readonly is easy
+* GET and Search (fixed search params)
+* It's valuable fist step!
+
+</script></section>
+
+
+<section data-markdown><script type="text/template" >
+
+### Facade (impl)
+---
+
+1. Get request
+2. Translate to query your schema
+3. Translate to FHIR format
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### Facade (Pros and Cons)
+---
+
+1. [+] easy to do
+2. [+] good first step
+3. [-] limited FHIR
+3. [-] complexity is growing
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### Facade (Challenges)
+---
+
+translate API and Model at the same time
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### FHIR Component (approach)
+---
+
+```
+
+                                          FHIR API
+                                            o
+                                            |
+            __________                 _____|______
+            |        |                 |          |
+            | Legacy | = sync / map => | FHIR Srv |
+            |        |                 |          |
+            ----------                 ------------
+
+
+.
+
+```
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### FHIR Component (approach)
+---
+
+1. Replicate data (translate model)
+2. Serve FHIR API (done for you)
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### FHIR Component (challenges)
+---
+
+* Detect changes (polling, ev sourcing)
+  * Handle deletes
+* Duplication (massive source migrations)
+
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### Sync Two Way 
+---
+is hard, but possible.
+
+Good news - not everything can be written back!
+
+How do you refactor complex system?
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### Smooth migration
+---
+New services use FHIR.
+Switch one by one legacy components to FHIR.
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### FHIR Component (approach)
+---
+
+```
+
+           [old Components]]]  --->   [New Components]
+               \|/                          |
+                o                           o FHIR API
+                |                           |
+            ____|_____                 _____|______
+            |        |                 |          |
+            | Legacy | = sync / map => | FHIR Srv |
+            |        |                 |          |
+            ----------                 ------------
+
+
+.
+
+```
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### Deep vs Shallow interop
+---
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### FHIR Backend (ultimate)
+---
+
+Use it to make it work!
+
+</script></section>
+
+
+<section data-markdown><script type="text/template" >
+
+### FHIR Backend (challenges)
+---
+
+* Access Control
+* Custom Operations
+* SQL on FHIR
+* ....
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### [A]idbox
+
+---
+
+* Developers Flexibilty
+* compete with frameworks (not servers)
+
+</script></section>
+
+
+<section data-markdown><script type="text/template">
+## Thank you!
+
+---
+
+* Nicola (RIO) in zulip
+* @niquola on github & twitter
+* niquola@health-samurai.io
+
+</script></section>
+
+
+
+    <script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'convex', // none/fade/slide/convex/concave/zoom
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
