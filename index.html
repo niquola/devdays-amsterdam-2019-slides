@@ -189,9 +189,9 @@ Nikolai Ryzhikov @ Health Samurai
 <section data-markdown><script type="text/template" >
 ### Path
 ---
-* FHIR facade
-* FHIR server
-* FHIR backend
+1. FHIR facade
+2. FHIR server
+3. FHIR backend
 </script></section>
 
 
@@ -294,11 +294,40 @@ address:
 
 <section data-markdown><script type="text/template" >
 
-### Facade
+### FHIR Facade
+---
+
+```
+                        
+                          o FHIR API
+                          |
+                      ____|_____
+                      |        |
+                      | proxy/ |
+                      |  map   |
+                      ----------
+                          |
+                      ____|_____
+                      |        |
+                      | Legacy | 
+                      |        |
+                      ----------
+
+
+
+
+.
+```
+
+</script></section>
+
+<section data-markdown><script type="text/template" >
+
+### FHIR Facade
 ---
 
 * Readonly is easy
-* GET and Search (fixed search params)
+* GET and Search (limited num of search params)
 * It's valuable fist step!
 
 </script></section>
@@ -306,7 +335,7 @@ address:
 
 <section data-markdown><script type="text/template" >
 
-### Facade (impl)
+### FHIR Facade (impl)
 ---
 
 1. Get request
@@ -317,7 +346,7 @@ address:
 
 <section data-markdown><script type="text/template" >
 
-### Facade (Pros and Cons)
+### FHIR Facade (Pros and Cons)
 ---
 
 1. [+] easy to do
@@ -329,7 +358,7 @@ address:
 
 <section data-markdown><script type="text/template" >
 
-### Facade (Challenges)
+### FHIR Facade (Challenges)
 ---
 
 translate API and Model at the same time
@@ -338,7 +367,7 @@ translate API and Model at the same time
 
 <section data-markdown><script type="text/template" >
 
-### FHIR Component (approach)
+### FHIR Server
 ---
 
 ```
@@ -361,7 +390,7 @@ translate API and Model at the same time
 
 <section data-markdown><script type="text/template" >
 
-### FHIR Component (approach)
+### FHIR Server (approach)
 ---
 
 1. Replicate data (translate model)
@@ -371,7 +400,7 @@ translate API and Model at the same time
 
 <section data-markdown><script type="text/template" >
 
-### FHIR Component (challenges)
+### FHIR Server (challenges)
 ---
 
 * Detect changes (polling, ev sourcing)
